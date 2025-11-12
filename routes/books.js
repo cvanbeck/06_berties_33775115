@@ -18,7 +18,7 @@ router.get('/list', (req, res, next) => {
             console.log(err)
             next(err)
         }
-        res.send(result)
+        res.render("list.ejs", {availableBooks:result})
     });
 });
 
