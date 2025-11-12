@@ -22,12 +22,14 @@ router.get('/list', (req, res, next) => {
     });
 });
 
-router.get("/add-book", (req, res) => {
+router.get("/bargainbooks")
+
+router.get("/addbook", (req, res) => {
     res.render("addBook.ejs", {error:""})
 })
 
-router.post("/book-added", (req, res, next) => {
-    let sqlQuery = "INSERT INTO BOOKS (name, price) VALUES (?,?)"
+router.post("/bookadded", (req, res, next) => {
+    let sqlQuery = "INSERT INTO books (name, price) VALUES (?,?)"
     let newRecord = [req.body.name, req.body.price]
     db.query(sqlQuery, newRecord, (err, result) => {
         if(err){
@@ -35,7 +37,7 @@ router.post("/book-added", (req, res, next) => {
         }
         else{
             res.send(`This book has been added to the database, name: ${req.body.name}
-                price: ${req.body.price}`)
+                price: ${req.body.price}`)  
         }
     })
 })
