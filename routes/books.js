@@ -23,7 +23,7 @@ router.get('/list', (req, res, next) => {
 });
 
 router.get("/add-book", (req, res) => {
-    res.render("addBook.ejs")
+    res.render("addBook.ejs", {error:""})
 })
 
 router.post("/book-added", (req, res, next) => {
@@ -31,7 +31,7 @@ router.post("/book-added", (req, res, next) => {
     let newRecord = [req.body.name, req.body.price]
     db.query(sqlQuery, newRecord, (err, result) => {
         if(err){
-            next(err)
+            res.render("addBook.ejs", {error:"Failed"})
         }
         else{
             res.send(`This book has been added to the database, name: ${req.body.name}
