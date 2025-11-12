@@ -22,5 +22,22 @@ router.get('/list', (req, res, next) => {
     });
 });
 
+router.get("/add-book", (req, res) => {
+    res.render("addBook.ejs")
+})
+
+router.post("/book-added", (req, res, next) => {
+    let sqlQuery = "INSERT INTO BOOKS (name, price) VALUES (?,?)"
+    let newRecord = [req.body.name, req.body.price]
+    db.query(sqlQuery, newRecord, (err, result) => {
+        if(err){
+            next(err)
+        }
+        else{
+            res.send(`This book has been added to the database, name: ${req.body.name}
+                price: ${req.body.price}`)
+        }
+    })
+})
 // Export the router object so index.js can access it
 module.exports = router
