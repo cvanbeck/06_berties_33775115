@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%=shopData.shopName%> search results</title>
+    <link rel="stylesheet"  type="text/css" href="/main.css" />
+</head>
+<body>
+    <h1><%=shopData.shopName%></h1>
+    <h2>Here are the books that match your search</h2>
+        <ul>
+        <% availableBooks.forEach(book => { %>
+            <li><%=book.name%>, <%=book.price%> </li> 
+        <% }) %>
+</body>
+</html>
