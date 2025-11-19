@@ -25,7 +25,7 @@ app.locals.shopData = {shopName: "Bertie's Books"}
 const db = mysql.createPool({
     host: "localhost",
     user: "berties_books_app",
-    password: "qwertyuiop",
+    password: process.env.PASSWORD,
     database: "berties_books",
     waitForConnections: true,
     connectionLimit: 10,
