@@ -2,6 +2,7 @@
 const express = require("express")
 const router = express.Router()
 const bcrypt = require('bcrypt');
+const fs = require("fs")
 
 // Encryption config
 const saltRounds = 10;
@@ -46,13 +47,17 @@ router.post("/loggedin", (req, res, next) => {
         if (err) {
             next(err)
         }   
-        else if(result) {
-            bcrypt.compare(req.body.password, result[0].hashedPassword, (err, result) => {
-                if (err) {
-                    next(err)
-                } else if (result == true) {
+        else if(result[0]) {
+            bcrypt.compare(req.body.password, result[0].hashedPassword, async (err, result) => {
+                if (err){next(err)}
+                let query = "INSERT INTO login_attempts (username, outcome, time) VALUE (?, ?, NOW())"
+                if (result == true) {
+                    // We don't want these two functions to throw any errors if they fail, nor do we want them to hold up the logging in.
+                    // Therefore we just let them run and allow the webapp to continue with logging in
+                    db.query(query, [req.body.username, "Success"], (err, result) => { return })
                     res.send("Login successful")
                 } else {
+                    db.query(query, [req.body.username, "Failure"], (err, result) => { return })
                     res.send("Login unsuccesful")
                 }
             })
@@ -61,6 +66,16 @@ router.post("/loggedin", (req, res, next) => {
             res.send("User not found")
         }
     })
+})
+
+router.get("/audit", (req, res, next) => {
+    let sqlquery = "SELECT * FROM login_attempts"
+    db.query(sqlquery, (err, result) => {
+        if (err) {
+            next(err)
+        }
+        res.render("audit.ejs", { attempts: result })
+    });
 })
 
 router.get("/list", (req, res, next) => {

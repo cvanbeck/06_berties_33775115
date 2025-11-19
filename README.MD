@@ -12,3 +12,8 @@ node index.js
 ## dotenv
 Password is stored in a file name config.env, when this application first runs it grabs this value and stores it
 as a enviroment variable. When the DB runs it grabs this variable and uses it to log into the DB. 
+
+## Audit
+This webapp also logs all login attempts made to a valid username, this is done by by creating a new table called login_attempts, when a login attempt a new entry is added included username, current time, and if the request was succesful or not.
+
+I didn't want this logging to hold up any other parts of the web app, therefore these requests are one line callbacks that just return when complete, therefore users trying to log in aren't held back by the actual logging.
