@@ -25,7 +25,7 @@ console.log(process.env.PASSWORD)
 const db = mysql.createPool({
     host: "localhost",
     user: "berties_books_app",
-    password: process.env.PASSWORD,
+    password: process.env.BB_PASSWORD,
     database: "berties_books",
     waitForConnections: true,
     connectionLimit: 10,

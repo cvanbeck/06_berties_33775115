@@ -35,13 +35,13 @@ router.get('/list', (req, res, next) => {
 
 router.get("/bargainbooks", (req, res) => {
     let sqlQuery = "SELECT * FROM books WHERE price < 20.00"
-    db.query(sqlQuery, (err, result) =>{
-        if(err){
+    db.query(sqlQuery, (err, result) => {
+        if (err) {
             console.log(err)
             next(err)
         }
-        else{
-            res.render("bargainbooks.ejs", {availableBooks:result})
+        else {
+            res.render("bargainbooks.ejs", { availableBooks: result })
         }
     })
 })
