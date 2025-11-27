@@ -34,7 +34,7 @@ router.post('/registered',
         if (!errors.isEmpty()) {
             res.render("./register")
         } else {
-            bcrypt.hash(req.body.password, saltRounds, (err, hashedPassword) => {
+            bcrypt.hash(req.sanitise(req.body.password), saltRounds, (err, hashedPassword) => {
                 if (err) return res.send(err);
 
                 let sqlQuery = `
@@ -42,18 +42,18 @@ router.post('/registered',
             VALUES (?, ?, ?, ?, ?)
         `
                 let newRecord = [
-                    req.body.username,
-                    req.body.first,
-                    req.body.last,
-                    req.body.email,
+                    req.sanitise(req.body.username),
+                    req.sanitise(req.body.first),
+                    req.sanitise(req.body.last),
+                    req.sanitise(req.body.email),
                     hashedPassword
                 ];
 
                 db.query(sqlQuery, newRecord, (err, result) => {
                     if (err) return res.send(err)
-                    res.send(`Hello ${req.body.first} ${req.body.last} you are now registered!
-                    We will send an email to you at ${req.body.email}. Your password is:
-                    ${req.body.password} and your hashed password is: ${hashedPassword}
+                    res.send(`Hello ${req.sanitise(req.body.first)} ${req.sanitise(req.body.last)} you are now registered!
+                    We will send an email to you at ${req.sanitise(req.body.email)}. Your password is:
+                    ${req.sanitise(req.body.password)} and your hashed password is: ${hashedPassword}
                 `)
                 });
             })
@@ -65,11 +65,11 @@ router.get("/login", (req, res, next) => {
 })
 
 router.post("/loggedin", (req, res, next) => {
-    db.query("SELECT hashedPassword FROM userdata WHERE username = ?", req.body.username, (err, result) => {
+    db.query("SELECT hashedPassword FROM userdata WHERE username = ?", req.sanitise(req.body.username), (err, result) => {
         if(err) return next(err)
         if(!result[0]) return res.send("User not found")
 
-        bcrypt.compare(req.body.password, result[0].hashedPassword, (err, equal) => {
+        bcrypt.compare(req.sanitise(req.body.password), result[0].hashedPassword, (err, equal) => {
             if (err) return next(err)
             // ID is stored instead of username, to reduce redudancy
             let query = `
@@ -81,9 +81,9 @@ router.post("/loggedin", (req, res, next) => {
             // We don't want this function to throw any errors if they fail, nor do we want them to hold up log in.
             // Therefore we just let it run and allow the webapp to continue with log in
             let outcome = equal ? "Success" : "Failure"
-            db.query(query, [outcome, req.body.username], (err, result) => { return })
+            db.query(query, [outcome, req.sanitise(req.body.username)], (err, result) => { return })
             if (equal) {
-                req.session.userId = req.body.username;
+                req.session.userId = req.sanitise(req.body.username);
                 res.send("Login successful")
             } else {
                 res.send("Login unsuccesful")

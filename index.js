@@ -4,6 +4,7 @@ const mysql = require('mysql2');
 var ejs = require('ejs')
 const path = require('path')
 var session = require("express-session")
+const expressSanitiser = require("express-sanitizer")
 require('dotenv').config()
 
 // Create the express application object
@@ -27,6 +28,8 @@ app.use(session({
         expires: 600000
     }
 }))
+
+app.use(expressSanitiser())
 
 // Define our application-specific data
 app.locals.shopData = {shopName: "Bertie's Books"}

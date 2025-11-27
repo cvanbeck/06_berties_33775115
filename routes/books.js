@@ -52,14 +52,14 @@ router.get("/addbook", (req, res) => {
 
 router.post("/bookadded", (req, res, next) => {
     let sqlQuery = "INSERT INTO books (name, price) VALUES (?,?)"
-    let newRecord = [req.body.name, req.body.price]
+    let newRecord = [req.sanitize(req.body.name), req.sanitize(req.body.price)]
     db.query(sqlQuery, newRecord, (err, result) => {
         if(err){
             res.render("addBook.ejs", {error:"Failed"})
         }
         else{
-            res.send(`This book has been added to the database, name: ${req.body.name}
-                price: ${req.body.price}`)  
+            res.send(`This book has been added to the database, name: ${req.sanitize(req.body.name)}
+                price: ${req.sanitize(req.body.price)}`)  
         }
     })
 })
