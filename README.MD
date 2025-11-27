@@ -38,3 +38,5 @@ Users that aren't logged in are still able to access:
 - Search Books
 - List all books
 - List all books less than 20 pound
+
+Essentially access is controlled based on which pages allow you to either view private data or pages that allow you to add new elements to the database.
