@@ -2,7 +2,7 @@
 const express = require("express")
 const router = express.Router()
 const bcrypt = require('bcrypt');
-const fs = require("fs")
+const {check, validationResult } = require("express-validator")
 
 //Config
 const saltRounds = 10;
@@ -23,31 +23,39 @@ router.get('/register', function (req, res, next) {
     res.render('register.ejs')
 })
 
-router.post('/registered', (req, res, next) => {
-    bcrypt.hash(req.body.password, saltRounds, (err, hashedPassword) => {
-        if (err) return res.send(err);
+router.post('/registered',
+    [check("email").isEmail(),
+    check('username').isLength({ min: 5, max: 20 }),],
+    (req, res, next) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            res.render("./register")
+        } else {
+            bcrypt.hash(req.body.password, saltRounds, (err, hashedPassword) => {
+                if (err) return res.send(err);
 
-        let sqlQuery = `
+                let sqlQuery = `
             INSERT INTO userdata (username, firstName, lastName, email, hashedPassword) 
             VALUES (?, ?, ?, ?, ?)
         `
-        let newRecord = [
-            req.body.username, 
-            req.body.first, 
-            req.body.last, 
-            req.body.email, 
-            hashedPassword
-        ];
+                let newRecord = [
+                    req.body.username,
+                    req.body.first,
+                    req.body.last,
+                    req.body.email,
+                    hashedPassword
+                ];
 
-        db.query(sqlQuery, newRecord, (err, result) => {
-            if (err) return res.send(err)
-            res.send(`Hello ${req.body.first} ${req.body.last} you are now registered!
+                db.query(sqlQuery, newRecord, (err, result) => {
+                    if (err) return res.send(err)
+                    res.send(`Hello ${req.body.first} ${req.body.last} you are now registered!
                     We will send an email to you at ${req.body.email}. Your password is:
                     ${req.body.password} and your hashed password is: ${hashedPassword}
                 `)
-        });
+                });
+            })
+        };
     });
-});
 
 router.get("/login", (req, res, next) => {
     res.render("login.ejs")
